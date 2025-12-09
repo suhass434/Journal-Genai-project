@@ -6,15 +6,20 @@ interface JournalEntry {
     english_text: string;
     structured_events: {
         date?: string;
-        actions?: string[];
-        places?: string[];
-        people?: string[];
-        emotions?: string[];
+        actions?: Array<string | { type?: string; description?: string }>;
+        places?: Array<string | { type?: string; description?: string }>;
+        people?: Array<string | { type?: string; description?: string }>;
+        emotions?: Array<string | { type?: string; description?: string }>;
     };
 }
 
 export default function JournalCard({ entry }: { entry: JournalEntry }) {
     const date = new Date(entry.timestamp).toLocaleString();
+
+    const renderLabel = (item: string | { type?: string; description?: string }) => {
+        if (typeof item === 'string') return item;
+        return item.description ?? item.type ?? JSON.stringify(item);
+    };
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -36,17 +41,17 @@ export default function JournalCard({ entry }: { entry: JournalEntry }) {
             <div className="flex flex-wrap gap-2 mt-4">
                 {entry.structured_events?.emotions?.map((emotion, i) => (
                     <span key={i} className="flex items-center gap-1 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-xs font-medium">
-                        <Smile size={12} /> {emotion}
+                        <Smile size={12} /> {renderLabel(emotion)}
                     </span>
                 ))}
                 {entry.structured_events?.places?.map((place, i) => (
                     <span key={i} className="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
-                        <MapPin size={12} /> {place}
+                        <MapPin size={12} /> {renderLabel(place)}
                     </span>
                 ))}
                 {entry.structured_events?.actions?.map((action, i) => (
                     <span key={i} className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                        <Activity size={12} /> {action}
+                        <Activity size={12} /> {renderLabel(action)}
                     </span>
                 ))}
             </div>
