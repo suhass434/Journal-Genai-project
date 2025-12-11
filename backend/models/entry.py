@@ -8,6 +8,12 @@ class JournalEntry(BaseModel):
     english_text: Optional[str] = None
     structured_events: Optional[Dict[str, Any]] = None
     embedding_vector: Optional[List[float]] = None
+    summary: Optional[str] = None
+    tags: Optional[List[str]] = None
+    sentiment: Optional[Dict[str, Any]] = None
+    mood: Optional[str] = None
+    goal_ids: Optional[List[str]] = None
+    day: Optional[str] = None
 
     class Config:
         json_schema_extra = {
