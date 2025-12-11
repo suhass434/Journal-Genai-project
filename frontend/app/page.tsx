@@ -71,8 +71,8 @@ export default function Home() {
               <Book size={32} />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">My Personal Journal</h1>
-          <p className="text-gray-600">Record your memories, ask about your past.</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Chronicle</h1>
+          <p className="text-gray-600">Your AI-powered personal memory companion.</p>
         </header>
 
         <div className="flex justify-center mb-8">
