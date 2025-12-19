@@ -5,14 +5,20 @@ import axios from 'axios';
 import JournalEntryForm from '@/components/JournalEntryForm';
 import QuestionForm from '@/components/QuestionForm';
 import JournalCard from '@/components/JournalCard';
-import { Book } from 'lucide-react';
+import TaskInput from '@/components/TaskInput';
+import TaskList from '@/components/TaskList';
+import TaskCompletion from '@/components/TaskCompletion';
+import DailySummary from '@/components/DailySummary';
+import ProductivityInsights from '@/components/ProductivityInsights';
+import { Book, ListTodo } from 'lucide-react';
 import { Map } from 'lucide-react';
 import Link from 'next/link';
 import GoalsPanel from '@/components/GoalsPanel';
 
 export default function Home() {
   const [entries, setEntries] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'journal' | 'ask' | 'timeline' | 'goals'>('journal');
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'tasks' | 'summary' | 'insights' | 'journal' | 'ask' | 'timeline' | 'goals'>('tasks');
   const [timeline, setTimeline] = useState<Record<string, any[]>>({});
   const [story, setStory] = useState<string | null>(null);
   const [storyLoading, setStoryLoading] = useState(false);
@@ -26,8 +32,21 @@ export default function Home() {
     }
   };
 
+  const fetchTasks = async () => {
+    try {
+      // Fetch tasks for the next 7 days to show upcoming tasks
+      const response = await axios.get('http://localhost:8000/api/tasks?limit=100');
+      if (response.data.success) {
+        setTasks(response.data.tasks);
+      }
+    } catch (error) {
+      console.error("Failed to fetch tasks", error);
+    }
+  };
+
   useEffect(() => {
     fetchEntries();
+    fetchTasks();
   }, []);
 
   useEffect(() => {
@@ -67,58 +86,76 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-12">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-600 rounded-full text-white">
-              <Book size={32} />
+            <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white">
+              <ListTodo size={32} />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Chronicle</h1>
-          <p className="text-gray-600">Your AI-powered personal memory companion.</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Task Scheduler AI</h1>
+          <p className="text-gray-600">Your intelligent personal productivity assistant</p>
         </header>
 
         <div className="flex justify-center mb-8">
-            <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-200 inline-flex">
+          <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-200 inline-flex flex-wrap gap-1">
             <button
-              onClick={() => setActiveTab('journal')}
-              
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'journal'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              onClick={() => setActiveTab('tasks')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'tasks'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
             >
-              Write Journal
+              📝 Tasks
+            </button>
+            <button
+              onClick={() => setActiveTab('summary')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'summary'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+            >
+              📊 Summary
+            </button>
+            <button
+              onClick={() => setActiveTab('insights')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'insights'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+            >
+              💡 Insights
+            </button>
+            <button
+              onClick={() => setActiveTab('journal')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'journal'
+                ? 'bg-green-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+            >
+              📔 Journal
             </button>
             <button
               onClick={() => setActiveTab('ask')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'ask'
-                  ? 'bg-purple-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'ask'
+                ? 'bg-orange-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
             >
-              Ask a Question
+              ❓ Ask
             </button>
-              <button
-                onClick={() => setActiveTab('goals')}
-                className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'goals'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-              >
-                Goals
-              </button>
-              <button
-                onClick={() => setActiveTab('timeline')}
-                className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'timeline'
-                    ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-              >
-                <span className="inline-flex items-center gap-2"><Map size={14} /> Timeline</span>
-              </button>
           </div>
         </div>
 
         <div className="space-y-8">
-          {activeTab === 'journal' ? (
+          {activeTab === 'tasks' ? (
+            <div className="space-y-6">
+              <TaskInput onTasksCreated={fetchTasks} />
+              <TaskCompletion onTaskUpdate={fetchTasks} />
+              <TaskList tasks={tasks} onTaskUpdate={fetchTasks} />
+            </div>
+          ) : activeTab === 'summary' ? (
+            <DailySummary />
+          ) : activeTab === 'insights' ? (
+            <ProductivityInsights />
+          ) : activeTab === 'journal' ? (
             <>
               <JournalEntryForm onEntryAdded={handleEntryAdded} />
               <div className="space-y-6 mt-8">
