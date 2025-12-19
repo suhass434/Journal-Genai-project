@@ -18,12 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routes import journal, query, tools, goals
+from routes import journal, query, tools, goals, tasks
 
 app.include_router(journal.router, prefix="/api")
 app.include_router(query.router, prefix="/api")
 app.include_router(tools.router, prefix="/api")
 app.include_router(goals.router, prefix="/api")
+app.include_router(tasks.router, prefix="/api")
 
 @app.get("/")
 async def root():
